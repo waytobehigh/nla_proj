@@ -10,7 +10,6 @@ import csv
 import Params
 import load
 import rnn
-import matplotlib.pyplot as plt
 
 def train(params):
 
@@ -26,6 +25,13 @@ def train(params):
 
     print ("parameters = ", params)
 
+    class List:
+        def __init__(self):
+            self.list = list()
+
+        def append(self, item):
+            self.list.append(item)
+
     model = rnn.RNNModel(params)
 
     # load model
@@ -37,7 +43,7 @@ def train(params):
     
     #save data to file(Egor)
     
-    with open('data_'+params.cell+'_dataset_'+params.dataset+'_L_'+str(params.num_layers)+'_rsize_'+str(params.r_size),'w') as file:
+    with open('data_'+params.cell+'_dataset_'+params.dataset+'_L_'+str(params.num_layers)+'_rsize_'+str(params.r_size) + '_lr_decay_' + str(params.lr_decay) + '_batch_size_' + str(params.batch_size),'w') as file:
         for i in range(len(train_error)):
             file.write(str(epochs[i])+' '+str(train_error[i])+' '+str(test_error[i])+'\n')
     

@@ -7,41 +7,6 @@ from tensorflow.python.framework import ops
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import sparse_ops
 
-# ############################################################
-# ############ BLAS3 version of SVD ops ######################
-# ############################################################
-# #svd_block_prod_module = tf.load_op_library(os.path.dirname(os.path.abspath(__file__)) + '/magma_svd_ops/svd_block_prod_gpu.so')
-# ############################################################
-# #grad_svd_block_prod_module = tf.load_op_library(os.path.dirname(os.path.abspath(__file__)) + '/magma_svd_ops/grad_svd_block_prod_gpu.so')
-
-# @ops.RegisterGradient("SvdBlockProdGpu")
-# def _svd_block_prod_gpu_grad(op, grad):
-#     H = op.inputs[0]
-#     U = op.inputs[1]
-#     isForward = op.get_attr("is_forward")
-#     return grad_svd_block_prod_module.grad_svd_block_prod_gpu(H,U,grad, isForward)
-# ############################################################
-# ############ BLAS2 version of SVD ops ######################
-# ############################################################
-# #svd_prod_module = tf.load_op_library(os.path.dirname(os.path.abspath(__file__)) + '/cuda_svd_ops/svd_prod_gpu.so')
-# #grad_svd_prod_module = tf.load_op_library(os.path.dirname(os.path.abspath(__file__)) + '/cuda_svd_ops/grad_svd_prod_gpu.so')
-# @ops.RegisterGradient("SvdProdGpu")
-# def _svd_prod_gpu_grad(op, grad):
-#     H = op.inputs[0]
-#     U = op.inputs[1]
-#     return grad_svd_prod_module.grad_svd_prod_gpu(H,U,grad)
-
-# ############################################################
-# #svd_inv_prod_module = tf.load_op_library(os.path.dirname(os.path.abspath(__file__)) + '/cuda_svd_ops/svd_inv_prod_gpu.so')
-# #grad_svd_inv_prod_module = tf.load_op_library(os.path.dirname(os.path.abspath(__file__)) + '/cuda_svd_ops/grad_svd_inv_prod_gpu.so')
-# @ops.RegisterGradient("SvdInvProdGpu")
-# def _svd_inv_prod_gpu_grad(op, grad):
-#     H = op.inputs[0]
-#     U = op.inputs[1]
-#     return grad_svd_inv_prod_module.grad_svd_inv_prod_gpu(H,U,grad)
-
-# ############################################################
-
 #class SpectralRNNCell(tf.contrib.rnn.RNNCell):
 class SpectralRNNCell(tf.compat.v1.nn.rnn_cell.RNNCell):
     """Implements a simple distribution based recurrent unit that keeps moving
@@ -240,10 +205,9 @@ def _linear(args, output_size, bias, bias_start=0.0, scope=None):
             res = tf.matmul(tf.concat(args, 1), matrix)
         if not bias:
             return res
-        dtype = [a.dtype for a in args][0]
         bias_term = tf.compat.v1.get_variable(
             "Bias", [output_size],
             dtype=dtype,
-            initializer=tf.constant_initializer(bias_start)
+            initializer=tf.constant_initializer(bias_start, dtype = dtype)
         )
     return res + bias_term
