@@ -1,0 +1,2 @@
+model_checkpoint_path: "LSTM.128.init0.001.epoch4"
+all_model_checkpoint_paths: "LSTM.128.init0.001.epoch4"
