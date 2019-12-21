@@ -7,6 +7,7 @@ import sys,os
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import sparse_ops
+from svd_ops import container
 
 
 class RNNModel (object):
@@ -88,7 +89,6 @@ class RNNModel (object):
             assert 0, "unsupported cell %s" % (params.cell)
 
     def build(self, params):
-
         self.set_cell(params)
         # last linear layer
         last_w = tf.compat.v1.get_variable("last_w", initializer=tf.keras.backend.truncated_normal([self.rnn_cell.output_size, params.output_size], stddev=0.1))
@@ -143,7 +143,7 @@ class RNNModel (object):
             print("model not trained")
             return None, None
 
-        print ("start trainging! ")
+        print ("start training! ")
         sys.stdout.flush()
         train_error = []
         test_error = []
@@ -176,7 +176,9 @@ class RNNModel (object):
                         self.train_flag: True,
                         self.learning_rate: learning_rate}
                 # Run optimization op (backprop)
-                self.session.run(self.train_op, feed_dict=feed_dict)
+                res = self.session.run([self.train_op] + container, feed_dict=feed_dict)
+                print(('{:.3} ' * container.__len__()).format(*(res[1:])))
+                print()
                 if params.cell=='SpectralRNN':
                     self.session.run(normalize_op)
 
@@ -223,7 +225,7 @@ class RNNModel (object):
     
     def predict(self, x, batch_size=128):
         # Launch the graph
-        pred = np.zeros((len(x), self.pred.shape.as_list()[1]))
+        pred = np.zeros((len(x), self.pred.get_shape().as_list()[1]))
         # run on batches
         for batch_begin in range(0, len(x), batch_size):
             # get batch x and y

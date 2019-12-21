@@ -2,6 +2,8 @@ import numpy as np
 from tensorflow.python.framework import ops
 import tensorflow as tf
 
+container = []
+
 def Hprod(H, u, k):
     # H.shape = (batch, n_h)
     # u.shape = (n_h,)
@@ -49,6 +51,7 @@ def tf_Hgrad(H, u, G, k):
     delta_G = tf.expand_dims(beta, 1) * tf.reshape(u[-k: ], shape=(1 , k))
     G_update = tf.subtract(G_update,  delta_G)
     G_out = tf.concat([G[:,0 :-k], G_update], axis=1)
+
     return G_out, u_bar  # G_out.shape = (batch, n_h); u_bar.shape = (n_h,)
 ###### FP definition ########
 
@@ -96,7 +99,7 @@ def svdProdGrad(op, grad):
     for i in range(n_r-1, -1, -1):
         G, U_bar[i] = tf_Hgrad(H_hist[i], U[i], G, n_h-i)
     U_grad = tf.stack(U_bar)
-
+    container.append(tf.reduce_mean(tf.norm(G, axis=1)))
     return G, U_grad #the propagated gradient with respect to the first and second argument respectively
 
 def svdProdGrad_inv(op, grad):

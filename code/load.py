@@ -66,12 +66,12 @@ def load_mnist(params, permute=False):
     time_steps = 28*28
     if len(params.dataset) > 6: # mnist.xx
         time_steps = int(params.dataset.split('.')[1])
-    mnist_X = mnist_X.reshape((-1, time_steps, 28*28//time_steps))
+    mnist_X = mnist_X.reshape((-1, time_steps, 28*28/time_steps))
     #mnist_X = flatten_img(mnist_X) # X.shape => (n_samples, seq_len)
     print ("mnist_X.shape = ", mnist_X.shape)
     #mnist_X = mnist_X[:, :, np.newaxis] # X.shape => (n_samples, seq_len, n_features)
     mnist_y_one_hot = np.zeros((mnist_y.shape[0], 10))
-    for i in range(len(mnist_y)):
+    for i in xrange(len(mnist_y)):
         mnist_y_one_hot[i][mnist_y[i]] = 1
     print ("mnist_y.shape = ", mnist_y_one_hot.shape)
 
